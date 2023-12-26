@@ -7,6 +7,27 @@
 
     - name: install nodejs
       ansible.builtin.dnf:
-       name: nodejs
-       state: present
+        name: nodejs
+        state: present
+    
+    - name: create roboshop user
+      ansible.builtin.user:
+        name: roboshop
+
+    - name: create app directory
+      ansible.builtin.file:
+        path: /app
+        state: directory
+
+    - name: download catalogue.zip
+      ansible.builtin.get_url:
+        url: https://roboshop-builds.s3.amazonaws.com/catalogue.zip
+        dest: /tmp 
+
+    - name: Unzip catalogue.zip
+      ansible.builtin.unarchive:
+        src: /tmp/catalogue.zip
+        dest: /app 
+
+
 
