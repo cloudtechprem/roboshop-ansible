@@ -66,26 +66,9 @@
       ansible.builtin.command: mongo --host mongodb.learndevops.space < /app/schema/catalogue.js
       when: product_count.stdout == 0
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     - name: Enable and Start the catalogue
       ansible.builtin.service:
         name: catalogue
         enabled: yes
-        state: started
+        state: restarted
 
