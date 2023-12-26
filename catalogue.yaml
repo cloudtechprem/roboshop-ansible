@@ -54,6 +54,28 @@
         name: mongodb-org-shell
         state: present
 
+    - name: get the categories count
+      ansible.builtin.command: mongo --host mongodb.learndevops.space --quiet --eval 'db = db.getSiblingDB("catalogue"); db.products.count()'
+      register: products.count
+
+    - name: print the count
+      ansible.builtin.debug:
+        msg: "Product Count: {(product_count)}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     - name: Enable and Start the catalogue
       ansible.builtin.service:
         name: catalogue
