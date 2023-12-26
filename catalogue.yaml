@@ -56,7 +56,7 @@
 
     - name: get the categories count
       ansible.builtin.command: mongo --host mongodb.learndevops.space --quiet --eval 'db = db.getSiblingDB("catalogue"); db.products.count()'
-      register: products.count
+      register: product_count
 
     - name: print the count
       ansible.builtin.debug:
