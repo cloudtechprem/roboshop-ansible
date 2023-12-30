@@ -70,7 +70,7 @@
 
     - name: print output
       ansible.builtin.debug:
-      msg: "schema output: {{schema}}"
+        msg: "schema output: {{schema}}"
 
     - name: load cities schema 
       ansible.builtin.shell: mysql -h mysql.learndevops.space -uroot -p{{mysql_password}} < /app/schema/shipping.sql
