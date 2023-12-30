@@ -1,0 +1,78 @@
+- name: Installing User componenets
+  hosts: user 
+  become: yes 
+  tasks: 
+    - name: Disabling old and enabling NodeJS:18
+      ansible.builtin.shell: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y
+
+    - name: Install Nodejs
+      ansible.builtin.dnf:
+        name: nodejs
+        state: present
+
+    - name: create roboshop User
+      ansible.builtin.user:
+        name: roboshop
+        
+    - name: remove app directory
+      ansible.builtin.file:
+        path: /app
+        state: absent
+
+    - name: create app directory
+      ansible.builtin.file:
+        path: /app
+        state: directory
+
+    - name: Download app componenets
+      ansible.builtin.get_url: 
+        url: curl -L -o /tmp/user.zip https://roboshop-builds.s3.amazonaws.com/user.zip
+        dest: /tmp 
+
+    - name: Unzipping user.zip
+      ansible.builtin.unarchive:
+        src: /tmp/user.zip
+        dest: /app
+        remote_src: yes
+
+    - name: Install dependencies
+      ansible.builtin.command: npm install
+      args:
+        chdir: /app
+
+    - name: Creating user.service
+      ansible.builtin.copy:
+        src: user.service
+        dest: /etc/systemd/system/user.service
+
+    - name: daemon reload
+      ansible.builtin.systemd_service: 
+        daemon_reload: true
+
+    - name: copy mongodb.repo
+      ansible.builtin.copy:
+        src: mongodb.repo
+        dest: /etc/yum.repos.d/mongodb.repo
+
+    - name: mongodb-org-shell
+      ansible.builtin.dnf:
+        name: mongodb-org-shell
+        state: present
+
+    - name: get the user count
+      ansible.builtin.command: mongo --host mongodb.learndevops.space --quiet --eval 'db = db.getSiblingDB("users"); db.users.count()'
+      register: user_count
+
+    # - name: print the count
+    #   ansible.builtin.debug:
+    #     msg: "User Count: {{user_count}}"
+
+    - name: load user data
+      ansible.builtin.command: mongo --host mongodb.learndevops.space < /app/schema/user.js
+      when: user_count.stdout == "0"
+
+    - name: Enable and start User
+      ansible.builtin.service:
+        name: user
+        enabled: yes
+        state: restarted
