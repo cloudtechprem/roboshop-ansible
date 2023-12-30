@@ -73,7 +73,7 @@
       msg: "schema output: {{schema}}"
 
     - name: load cities schema 
-      ansible.builtin.command: mysql -h mysql.learndevops.space -uroot -p{{mysql_password}} < /app/schema/shipping.sql
+      ansible.builtin.shell: mysql -h mysql.learndevops.space -uroot -p{{mysql_password}} < /app/schema/shipping.sql
       when: schema.stdout != "1"
 
     - name: Enable and retart the shipping
