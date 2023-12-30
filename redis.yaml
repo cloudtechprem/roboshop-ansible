@@ -1,6 +1,6 @@
 - name: Installing redis
   hosts: redis
-  beceome: yes 
+  become: yes 
   tasks: 
     - name: Installing remi release
       ansible.builtin.dnf: 
